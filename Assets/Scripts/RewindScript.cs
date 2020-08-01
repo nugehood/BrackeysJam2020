@@ -2,8 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class RewindScript : MonoBehaviour
 {
+
+    Rewinder playerRewinder;
 
     public bool isRewinding = false;
 
@@ -22,12 +25,19 @@ public class RewindScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
+
+
+
+        playerRewinder = GameObject.FindGameObjectWithTag("Player").GetComponent<Rewinder>();
+
+        if (Input.GetKeyDown(KeyCode.Return) && playerRewinder.rewindLimit > 0)
         
             StartRewind();
         if (Input.GetKeyUp(KeyCode.Return))
             StopRewind();
         
+
+
     }
 
     private void FixedUpdate()
@@ -41,13 +51,14 @@ public class RewindScript : MonoBehaviour
     public void Record()
     {
         positions.Insert(0, transform.position);
+        playerRewinder.rewindLimit += 0.01f;
     }
 
     public void Rewind()
     {
         if (positions.Count > 0)
         {
-           
+            playerRewinder.rewindLimit -= 0.01f;
             transform.position = positions[0];
             positions.RemoveAt(0);
             
@@ -66,6 +77,7 @@ public class RewindScript : MonoBehaviour
 
     public void StopRewind()
     {
+        playerRewinder.rewindLimit += 0.01f;
         isRewinding = false;
         rigidbody.isKinematic = false;
     }

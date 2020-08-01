@@ -32,7 +32,7 @@ public class simpleCamera : MonoBehaviour
     void Update()
     {
 
-        //MO BERAK DULU HEHE
+        
         AI = FindObjectsOfType<AIScript>();
 
         foreach(AIScript waitress in AI)
