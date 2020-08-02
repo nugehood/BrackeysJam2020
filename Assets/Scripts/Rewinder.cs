@@ -10,11 +10,15 @@ public class Rewinder : MonoBehaviour
 
     public float rewindLimit;
 
+    public bool ableToRewind;
+
    
     // Update is called once per frame
     void Update()
     {
-        rewindLimit = Mathf.Clamp(rewindLimit,0f, 1f);
+        rewindLimit = Mathf.Clamp(rewindLimit,0f, 50f);
         rewindSlider.value = rewindLimit;
+       
+        
     }
 }

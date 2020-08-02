@@ -10,6 +10,8 @@ public class RewindScript : MonoBehaviour
 
     public bool isRewinding = false;
 
+    public bool ableToRewind;
+
     List<Vector3> positions;
 
     Rigidbody rigidbody;
@@ -30,11 +32,30 @@ public class RewindScript : MonoBehaviour
 
         playerRewinder = GameObject.FindGameObjectWithTag("Player").GetComponent<Rewinder>();
 
-        if (Input.GetKeyDown(KeyCode.Return) && playerRewinder.rewindLimit > 0)
-        
+        if(playerRewinder.rewindLimit >= 50)
+        {
+            ableToRewind = true;
+        }
+
+        else if(playerRewinder.rewindLimit <= 0)
+        {
+            ableToRewind = false;
+        }
+
+        if (!ableToRewind)
+        {
+            playerRewinder.rewindLimit += 2f;
+        }
+
+
+        if (Input.GetMouseButtonDown(1) && playerRewinder.rewindLimit > 0&&ableToRewind)
+        {
             StartRewind();
-        if (Input.GetKeyUp(KeyCode.Return))
+        }
+        if (Input.GetMouseButtonUp(1))
+        {
             StopRewind();
+        }
         
 
 
@@ -51,14 +72,13 @@ public class RewindScript : MonoBehaviour
     public void Record()
     {
         positions.Insert(0, transform.position);
-        playerRewinder.rewindLimit += 0.01f;
     }
 
     public void Rewind()
     {
         if (positions.Count > 0)
         {
-            playerRewinder.rewindLimit -= 0.01f;
+            playerRewinder.rewindLimit -= 1f;
             transform.position = positions[0];
             positions.RemoveAt(0);
             
@@ -77,7 +97,8 @@ public class RewindScript : MonoBehaviour
 
     public void StopRewind()
     {
-        playerRewinder.rewindLimit += 0.01f;
+        
+        
         isRewinding = false;
         rigidbody.isKinematic = false;
     }
