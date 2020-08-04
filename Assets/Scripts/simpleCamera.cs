@@ -8,13 +8,18 @@ public class simpleCamera : MonoBehaviour
     //Look duration on AI
     float lookEndAT = 3f;
 
-    //Array of AI
-    AIScript[] AI;
 
     //Player Transform
     public Transform playerBody;
 
+
     public float sensitivity;
+
+    PlayerItem playeritem;
+
+    tableState customer;
+
+    customerData Customerdata;
 
     Camera cam;
 
@@ -27,10 +32,14 @@ public class simpleCamera : MonoBehaviour
     {
         cam = GetComponent<Camera>();
 
+        playeritem = GetComponent<PlayerItem>();
+
+        Customerdata = FindObjectOfType<customerData>();
 
         //Lock cursor in the middle and make it invisible
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
 
     }
 
@@ -38,21 +47,7 @@ public class simpleCamera : MonoBehaviour
     void Update()
     {
 
-        //Find object that has the script in Scene!
-        AI = FindObjectsOfType<AIScript>();
-
-        //Checking every AI in scenes
-        foreach(AIScript waitress in AI)
-        {
-            //When one waitress is about to spill
-            if (waitress.isAboutSpill)
-            {
-                //Get AI body from the active one
-                //Start Coroutine for lookin at ai
-                aiBody = waitress.transform;
-                StartCoroutine(lookAi(lookEndAT));
-            }
-        }
+        
 
         float mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
@@ -73,10 +68,60 @@ public class simpleCamera : MonoBehaviour
 
         if (Physics.Raycast(ray ,out hit, 5f))
         {
-            if (hit.collider.gameObject.CompareTag("AI"))
+            if (hit.collider.gameObject.CompareTag("customer"))
             {
-                
-            }  
+                if (Input.GetMouseButtonDown(0))
+                {
+                    customer = hit.collider.GetComponent<tableState>();
+                    if(playeritem.food && customer.isHungry)
+                    {
+                        Debug.Log("Makan uhuy!");
+                        Customerdata.satisfy += 1;
+                        customer.actionLimit = 30;
+
+                        playeritem.food = false;
+
+                        customer.isHungry = false;
+                        customer.isThirsty = false;
+                        customer.actionIndex = 0;
+
+                        customer.timer = 0;
+                        customer.timeLimit = Random.Range(10, 40);
+                    }
+
+                    else if (playeritem.water && customer.isThirsty)
+                    {
+                        Debug.Log("Minum Hayuk!");
+                        Customerdata.satisfy += 1;
+                        customer.actionLimit = 30;
+
+                        playeritem.water = false;
+
+                        customer.isHungry = false;
+                        customer.isThirsty = false;
+                        customer.actionIndex = 0;
+
+                        customer.timer = 0;
+                        customer.timeLimit = Random.Range(10, 40);
+                    }
+
+                    else
+                    {
+                        Debug.Log("Invalid Input!!!");
+                        Customerdata.unsatisfy += 1;
+                        customer.actionLimit = 30;
+
+                        customer.isHungry = false;
+                        customer.isThirsty = false;
+                        customer.actionIndex = 0;
+
+                        customer.timer = 0;
+                        customer.timeLimit = Random.Range(10, 40);
+                    }
+                    
+
+                }
+            }
           
         }
 
@@ -84,25 +129,7 @@ public class simpleCamera : MonoBehaviour
 
     }
 
-    public void talkAI()
-    {
-        playerBody.LookAt(aiBody.transform.position);
-    }
-
-
-    IEnumerator lookAi(float delay)
-    {
-        playerBody.LookAt(aiBody.transform.position, Vector3.up);
-        this.enabled = false;
-        yield return new WaitForSeconds(delay);
-        foreach (AIScript waitress in AI)
-        {
-            waitress.isAboutSpill = false;
-        }
-        this.enabled = true;
-
-
-    }
+   
   
 
 

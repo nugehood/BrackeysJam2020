@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 public class RewindScript : MonoBehaviour
-{
+{ 
 
     Rewinder playerRewinder;
 
@@ -27,43 +27,42 @@ public class RewindScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        playerRewinder = GameObject.FindGameObjectWithTag("Player").GetComponent<Rewinder>();
 
+        if (playerRewinder.rewindLimit == 0)
+        {
+            ableToRewind = false;
+            Debug.Log("Dah NOL");
+        }
+        else if(playerRewinder.rewindLimit >= 50)
+        {
+            ableToRewind = true;
+        }
+        if (!ableToRewind&&!isRewinding)
+        {     
+                playerRewinder.rewindLimit += 1;
+        }
 
 
         playerRewinder = GameObject.FindGameObjectWithTag("Player").GetComponent<Rewinder>();
 
-        if(playerRewinder.rewindLimit >= 50)
-        {
-            ableToRewind = true;
-        }
-
-        else if(playerRewinder.rewindLimit <= 0)
-        {
-            ableToRewind = false;
-        }
-
-        if (!ableToRewind)
-        {
-            playerRewinder.rewindLimit += 2f;
-        }
-
-
-        if (Input.GetMouseButtonDown(1) && playerRewinder.rewindLimit > 0&&ableToRewind)
+     
+        if (Input.GetMouseButtonDown(1)&&ableToRewind)
         {
             StartRewind();
         }
         if (Input.GetMouseButtonUp(1))
         {
+            playerRewinder.rewindLimit += 1;
             StopRewind();
         }
         
-
 
     }
 
     private void FixedUpdate()
     {
-        if (isRewinding)
+        if (isRewinding&&ableToRewind)
             Rewind();
         else
             Record();
@@ -78,7 +77,7 @@ public class RewindScript : MonoBehaviour
     {
         if (positions.Count > 0)
         {
-            playerRewinder.rewindLimit -= 1f;
+            playerRewinder.rewindLimit -= 0.3f;
             transform.position = positions[0];
             positions.RemoveAt(0);
             

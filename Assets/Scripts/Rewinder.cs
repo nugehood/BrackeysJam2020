@@ -18,7 +18,5 @@ public class Rewinder : MonoBehaviour
     {
         rewindLimit = Mathf.Clamp(rewindLimit,0f, 50f);
         rewindSlider.value = rewindLimit;
-       
-        
     }
 }
